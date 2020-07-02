@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'event-api Sample SAM Template for event-api
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  EventTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: event_demo
+      AttributeDefinitions:
+      - AttributeName: eventID
+        AttributeType: N
+      KeySchema:
+      - AttributeName: eventID
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  EventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: EventFunction
+      Handler: app.app
+      Runtime: python3.8
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: EventTable
+      Events:
+        Test:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+        ListEvents:
+          Type: Api
+          Properties:
+            Path: /events
+            Method: get
+        PutEvent:
+          Type: Api
+          Properties:
+            Path: /events
+            Method: post
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /events/{id}/
+            Method: get
+        PatchEvent:
+          Type: Api
+          Properties:
+            Path: /events/{id}/
+            Method: patch
+        DeleteEvent:
+          Type: Api
+          Properties:
+            Path: /events/{id}/
+            Method: delete
+        ListEventsByEventType:
+          Type: Api
+          Properties:
+            Path: /events/eventType/{eventType}/
+            Method: get
+        ListEventsByDeviceID:
+          Type: Api
+          Properties:
+            Path: /events/deviceID/{deviceID}/
+            Method: get
+        ListEventsByUserID:
+          Type: Api
+          Properties:
+            Path: /events/userID/{userID}/
+            Method: get
+Outputs:
+  EventApi:
+    Description: API Gateway endpoint URL for Prod stage for events function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  EventFunction:
+    Description: events Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - EventFunction
+      - Arn
+  EventFunctionIamRole:
+    Description: Implicit IAM Role created for events function
+    Value:
+      Fn::GetAtt:
+      - EventFunctionRole
+      - Arn
