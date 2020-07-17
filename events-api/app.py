@@ -16,14 +16,14 @@ def index():
     return json_response({"message": "Event API!"})
 
 
-@app.route('/events', methods=['GET', 'POST'])
+@app.route('/events', methods=['GET', 'PUT'])
 def put_list_event():
     if request.method == 'GET':
         data = request.form.to_dict()
         data['eventID'] = int(data['eventID'])
         events = table.scan()['Items']
         return json_response(events)
-    elif request.method == "POST":
+    elif request.method == "PUT":
         table.put_item(Item=request.form.to_dict())
         return json_response({"message": "Event entry created"})
     else:
