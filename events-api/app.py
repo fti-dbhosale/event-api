@@ -77,7 +77,7 @@ def get_by_event_userID(userID):
 
 
 def json_response(data, response_code=200):
-    return json.dumps(data,  response_code, {'Content-Type': 'application/json'})
+    return json.dumps(data,  response_code})
 
 
 #{"eventID": "10001","eventType": "FaceDetection","eventDate": "2020-06-25 12:00 AM +900","deviceID": "DEBXYZ_1","userID": "user1","eventMessage": "sample text message"}
